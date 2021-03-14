@@ -13,7 +13,13 @@ module.exports =
         
         const reason = args.slice(1).join(" ") || "There was no reason!";
 
-        await toBan.send(`You have been banned from the server!\nReason: ${reason}\n if you feel like this was a mistake please appeal this ban`)
+        const embed = new Discord.MessageEmbed()
+        .setTitle(`**__You Have Banned__**`)
+        .setDescription(`You have been banned from the LazySensy Community \n\n **Reason**: ${reason} \n **Moderator**: ${message.author.username} \n **Date**: ${new Date().toLocaleDateString()} \n`)
+        .setAuthor(`LazyBot`, 'https://i.imgur.com/lg74UJw.jpeg')
+        .setTimestamp()
+
+        await toBan.send(embed)
 
         let data = await Punishments.findOne({
             GuildID: message.guild.id,

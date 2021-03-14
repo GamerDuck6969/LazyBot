@@ -1,3 +1,5 @@
+const Tickets = require(`../../models/TicketSchema`)
+
 module.exports = 
 {
     name: 'new',
@@ -30,12 +32,6 @@ module.exports =
             }));
         };
 
-        let supportrole = message.guild.roles.cache.find(role => role.name === "Support Team")
-
-        if (!supportrole) {
-            return message.channel.send("Sorry, but there is no support team role in this server. Either create or give permission to.").then((msg) => {msg.delete({timeout: 10000})});
-        }
-
         if (!reason){
             return message.channel.send("Please specify a ticket subject \n \`.new [subject]\`").then((msg) => {msg.delete({timeout: 10000})});
         }
@@ -45,34 +41,56 @@ module.exports =
             return message.channel.send("Sorry, But you already have a ticket open!").then((msg) => {msg.delete({timeout: 10000})});
         }
 
-        message.guild.channels.create(channelName, { parent: SupportCategory.id, topic: `Ticket Owner: ${message.author.id}`}).then(c => {
-            const everyone = message.guild.roles.cache.find(role => role.name === "@everyone")
-            c.updateOverwrite(supportrole, {
-                SEND_MESSAGE: true,
-                VIEW_CHANNEL: true,
-            });
-            c.updateOverwrite(everyone, {
-                SEND_MESSAGE: false,
-                VIEW_CHANNEL: false,
-            });
-            c.updateOverwrite(message.author, {
-                SEND_MESSAGE: true,
-                VIEW_CHANNEL: true,
-            });
-            let CreateTicketEmbed = new Discord.MessageEmbed()
-                .setColor("BLUE")
-                .setTitle("New Support Ticket")
-                .setDescription(`<@${message.author.id}> Your support ticket channel is <#${c.id}>`)
-                .setTimestamp()
-                .setFooter("Made By Lazysensy#1075")
-            message.channel.send(CreateTicketEmbed)
-            let GreetEmbed = new Discord.MessageEmbed()
-                .setColor("BLUE")
-                .addField("New Support Ticket", `<@${message.author.id}> Thanks for submitting a support ticket. Our support staff will get back to you shortly`)
-                .addField(`Issue:`, reason)
-                .setTimestamp()
-                .setFooter("Made By Lazysensy#1075")
-            c.send(GreetEmbed)
-        }).catch(console.error);
+        const channel = await message.guild.channels.create(channelName, { parent: SupportCategory.id, topic: `Ticket Owner: ${message.author.tag}`})
+
+        channel.updateOverwrite(message.guild.id, {
+            SEND_MESSAGE: false,
+            VIEW_CHANNEL: false,
+        });
+        channel.updateOverwrite(message.author, {
+            SEND_MESSAGE: true,
+            VIEW_CHANNEL: true,
+        });
+
+        const CreateTicketEmbed = new Discord.MessageEmbed()
+            .setColor("BLUE")
+            .setTitle("New Support Ticket")
+            .setDescription(`<@${message.author.id}> Your support ticket channel is <#${channel.id}>`)
+            .setTimestamp()
+            .setFooter("Made By Lazysensy#1075")
+        message.channel.send(CreateTicketEmbed)
+        const GreetEmbed = new Discord.MessageEmbed()
+            .setColor("BLUE")
+            .addField("New Support Ticket", `<@${message.author.id}> Thanks for submitting a support ticket. Our support staff will get back to you shortly`)
+            .addField(`Issue:`, reason)
+            .setTimestamp()
+            .setFooter("Made By Lazysensy#1075")
+
+        const reactionMessage = await channel.send(GreetEmbed);
+
+        try{
+            await reactionMessage.react("🔒");
+            await reactionMessage.react("⛔");
+        }catch(err){
+            channel.send("There was an error sending emojis");
+            throw err
+        }
+
+        const collector = reactionMessage.createReactionCollector(
+            (reaction, user) => message.guild.members.cache.find((member) => member.id === user.id).hasPermission("ADMINISTRATOR"),
+            { dispose: true }
+          );
+      
+          collector.on("collect", (reaction, user) => {
+            switch (reaction.emoji.name) {
+              case "🔒":
+                channel.updateOverwrite(message.author, { SEND_MESSAGES: false });
+                break;
+              case "⛔":
+                channel.send("Deleting this channel in 5 seconds!");
+                setTimeout(() => channel.delete(), 5000);
+                break;
+            }
+          });
     }
 }
