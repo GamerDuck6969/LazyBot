@@ -35,7 +35,7 @@ module.exports =
         {name: '.leaderboard / .lb', value: 'Shows the leaderboard of the top level players on the server'},
         {name: '.ping', value: 'Shows the ping of the bot'},
         {name: '.rank / .level [other user]', value: 'Used to show your current level on the guild/server or other users rank'},
-        {name: '.suggest / .suggestion / .idea [the thing you want to suggest]', value: ''},
+        {name: '.suggest / .suggestion / .idea [the thing you want to suggest]', value: 'Suggest an idea for the server or for my game Redacted'},
         {name: '.weather / .wthr [location]', value: 'shows you the weather of the location'},
         {name: '.youtube / .yt', value: 'Link for my youtube channel'},
         )
@@ -88,7 +88,7 @@ module.exports =
         .setTimestamp()
         .setFooter('Made by LazySensy#1075', 'https://i.imgur.com/lg74UJw.jpeg');
 
-        const pages =[supportCommandsEmbed, economyCommandsEmbed, adminCommandsEmbed];
+        const pages =[supportCommandsEmbed, otherCommandsEmbed, economyCommandsEmbed, adminCommandsEmbed];
         const textPageChange = true;
         const emojis = ["⏪", "⏩"];
         const time = 600000;
