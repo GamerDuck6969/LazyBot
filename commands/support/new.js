@@ -9,7 +9,7 @@ module.exports =
     permissions: [],
     async execute(message, args, cmd, client, Discord)
     {
-        const reason = message.content.split(" ").slice(1).join(" ");
+        const reason = args.slice(0).join(" ");
 
         let SupportCategory = message.guild.channels.cache.find(category => category.name === "Tickets")
 
@@ -25,15 +25,37 @@ module.exports =
             message.channel.send("Sorry But I Do Not Have Permissions To Create The Category Needed For Tickets!").then((msg) => {msg.delete({timeout: 10000})});
         }
 
-        if (!message.guild.roles.cache.find(role => role.name === "Support Team")) {
-            await (message.guild.roles.create({
-                name: 'Support Team',
-                color: 'BLUE',
-            }));
-        };
-
         if (!reason){
             return message.channel.send("Please specify a ticket subject \n \`.new [subject]\`").then((msg) => {msg.delete({timeout: 10000})});
+        }
+
+        let data = await Tickets.findOne({
+            GuildID: message.guild.id,
+            UserID: message.author.id
+        });
+
+        if(data){
+            data.TicketArray.unshift({
+                NewTicket: 'New Ticket',
+                Timestamp: new Date().getTime(),
+                Reason: reason,
+            });
+            data.save();
+            
+            console.log('We Have Updated The Tickets')
+
+        } else if(!data){
+            let newData = new Tickets({
+                GuildID: message.guild.id,
+                UserID: message.author.id,
+                TicketArray: [{
+                    NewTicket: 'New Ticket',
+                    Timestamp: new Date().getTime(),
+                    Reason: reason,
+                },],
+            });
+            newData.save();
+            console.log('We Have Made New Ticket Data')
         }
 
         const channelName = `ticket-${message.author.username}-${message.author.discriminator}`

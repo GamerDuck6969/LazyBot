@@ -122,7 +122,7 @@ module.exports = async (Discord, client, message) => {
         "MANAGE_EMOJIS",
     ]
 
-    if(command.permissions.length){
+    if (command.permissions.length){
         let invalidPerms = []
         for(const perm of command.permissions){
             if(!validPermissions.includes(perm)){

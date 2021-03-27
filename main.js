@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const client = new Discord.Client({disableEveryone: false});
 const mongoose = require('mongoose');
 const Levels = require('discord-xp');
 
@@ -18,6 +18,7 @@ mongoose.connect(process.env.MONGODB_SRV, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
+    autoIndex: false,
 }).then(() => {
     console.log('Connected to the database!');
 }).catch((err) => {
