@@ -66,6 +66,7 @@ module.exports = {
             );
 
             message.channel.send(EMBED);
+            message.delete()
         });
 
         COLLECTOR.on("end", (collected) => {
