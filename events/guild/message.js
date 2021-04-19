@@ -11,18 +11,20 @@ module.exports = async (Discord, client, message) => {
     const prefix = process.env.PREFIX;
     if(message.author.bot) return;
 
-    if(!message.member.hasPermission("ADMINISTRATOR")){
+    if(message.guild) {
+        if(!message.member.hasPermission("ADMINISTRATOR")){
 
-        let confirm = false;
-
-        var i;
-        for(i = 0;i < badwords.length; i++){
-            if(message.content.toLowerCase().includes(badwords[i].toLowerCase()))
-                confirm = true;
-        }
-        if(confirm) {
-            message.delete();
-            message.reply(`Please don't say bad-words in the server!`).then((msg) => {msg.delete({timeout: 10000})});
+            let confirm = false;
+    
+            var i;
+            for(i = 0;i < badwords.length; i++){
+                if(message.content.toLowerCase().includes(badwords[i].toLowerCase()))
+                    confirm = true;
+            }
+            if(confirm) {
+                message.delete();
+                message.reply(`Please don't say bad-words in the server!`).then((msg) => {msg.delete({timeout: 10000})});
+            }
         }
     }
 
