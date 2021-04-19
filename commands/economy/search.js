@@ -8,6 +8,7 @@ module.exports = {
     catergory: 'economy',
     description: 'Choose a location to search and have a chance to get coins',
     async execute(message, args, cmd, client, Discord, profileData) {
+        message.delete()
         const LOCATIONS = [
             "car",
             "sock",
@@ -66,14 +67,14 @@ module.exports = {
             );
 
             message.channel.send(EMBED);
-            message.delete()
+            m.delete();
         });
 
         COLLECTOR.on("end", (collected) => {
             if(collected.size == 0) {
                 return message.channel.send(
                     `What are you doing <@${message.author.id}>?! There was $${RANDOM_NUMBER.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} hidden inside the ${chosenLocations[0]}`
-                );
+                ).then((msg) => {msg.delete({timeout: 10000})});
             }
         });
 
@@ -81,6 +82,6 @@ module.exports = {
             `<@${
                 message.author.id
             }>\n**Which location would you like to search?** \nType the location in this channel.\n\`${chosenLocations.join("` `")}\``
-        );
+        ).then((msg) => {msg.delete({timeout: 10000})});
     },
 };
