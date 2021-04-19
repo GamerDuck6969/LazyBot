@@ -10,6 +10,14 @@ module.exports =
     {
         const ReactionPages = recon.ReactionPages;
 
+        const firstPageEmbed = new Discord.MessageEmbed()
+        .setColor('RANDOM')
+        .setTitle('Help Commands')
+        .setDescription('This is a help embed filled with all the commands to LazyBot.\nIf the current activity is set to beta then use "~" as the prefix, otherwise use "."\nTo see the next pages react to the emojis down below this embed')
+        .setAuthor('LazyBot', 'https://i.imgur.com/lg74UJw.jpeg')
+        .setTimestamp()
+        .setFooter('Made by LazySensy', 'https://i.imgur.com/lg74UJw.jpeg');
+
         const supportCommandsEmbed = new Discord.MessageEmbed()
         .setColor('RANDOM')
         .setTitle('Support Commands')
@@ -88,7 +96,23 @@ module.exports =
         .setTimestamp()
         .setFooter('Made by LazySensy#1075', 'https://i.imgur.com/lg74UJw.jpeg');
 
-        const pages =[supportCommandsEmbed, otherCommandsEmbed, economyCommandsEmbed, adminCommandsEmbed];
+        const musicCommandsEmbed = new Discord.MessageEmbed()
+        .setColor('RANDOM')
+        .setTitle('Music Commands!')
+        .setDescription('All music commands')
+        .addFields(
+            {name: '\u200B', value: '\u200B'},
+            {name: '.Play [Search For Song, Spotify Link, Youtube Link]', value: 'Plays music that you request'},
+            {name: '.Stop', value: 'Clears the queue of the music and leaves the voice chat'},
+            {name: '.Pause', value: 'pauses the current song'},
+            {name: '.Unpause', value: 'unpauses the bot and starts music again'},
+            {name: '.Queue', value: 'Shows the current song that is playing as well as the songs that are in the queue'},
+        )
+        .setAuthor('LazyBot', 'https://i.imgur.com/lg74UJw.jpeg')
+        .setTimestamp()
+        .setFooter('Made by LazySensy#1075', 'https://i.imgur.com/lg74UJw.jpeg');
+
+        const pages = [firstPageEmbed ,supportCommandsEmbed, otherCommandsEmbed, musicCommandsEmbed, economyCommandsEmbed, adminCommandsEmbed];
         const textPageChange = true;
         const emojis = ["⏪", "⏩"];
         const time = 600000;
