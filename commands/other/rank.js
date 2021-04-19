@@ -26,7 +26,7 @@ module.exports = {
             .setProgressBar('#FFA500', 'COLOR')
             .setUsername(message.author.username)
             .setDiscriminator(message.author.discriminator)
-            .setBackground('IMAGE', '')
+            //.setBackground('IMAGE', '')
             .setRankColor("GREEN")
         rank.build()
             .then(data =>{

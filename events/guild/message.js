@@ -1,6 +1,8 @@
 require('dotenv').config();
-const Levels = require('discord-xp')
+const Levels = require('discord-xp');
 const profileModel = require('../../models/ProfileSchema');
+const { badwords } = require("../../Badwords.json");
+const prettyMilliseconds = require('pretty-ms');
 
 const usersMap = new Map();
 const cooldowns = new Map();
@@ -8,6 +10,21 @@ const cooldowns = new Map();
 module.exports = async (Discord, client, message) => {
     const prefix = process.env.PREFIX;
     if(message.author.bot) return;
+
+    if(!message.member.hasPermission("ADMINISTRATOR")){
+
+        let confirm = false;
+
+        var i;
+        for(i = 0;i < badwords.length; i++){
+            if(message.content.toLowerCase().includes(badwords[i].toLowerCase()))
+                confirm = true;
+        }
+        if(confirm) {
+            message.delete();
+            message.reply(`Please don't say bad-words in the server!`).then((msg) => {msg.delete({timeout: 10000})});
+        }
+    }
 
     if(usersMap.has(message.author.id)) {
         const userData = usersMap.get(message.author.id)
@@ -65,7 +82,8 @@ module.exports = async (Discord, client, message) => {
                 hourly: 100,
                 workers: 0,
                 miners: 0,
-                bots: 0
+                bots: 0,
+                cooldowns: 0,
             });
             profile.save();
         }
@@ -122,6 +140,8 @@ module.exports = async (Discord, client, message) => {
         "MANAGE_EMOJIS",
     ]
 
+    if(!command) return message.reply(`${message} is not a valid command`);
+
     if (command.permissions.length){
         let invalidPerms = []
         for(const perm of command.permissions){
@@ -137,24 +157,47 @@ module.exports = async (Discord, client, message) => {
         }
     }
 
+    // const cooldown = profileData.cooldowns.find((cd) => cd.name === commandName);
+
+    //     if(!cooldown) {
+    //         UserRepo.createCooldown(message.author.id, commandName)
+    //     } else {
+    //         if(command.cooldown - (Date.now() - cooldown.time) > 0) {
+    //             const time = NumberUtil.msToTime(command.cooldown - (Date.now() - cooldown.time));
+
+    //             let onCooldownMsg = `<@${message.author.id}> this command is on cooldown for another`;
+    //             for(const t in time) {
+    //                 if(time[t] === 0) continue;
+    //                 onCooldownMsg += ` **${time[t]} ${t}**`;
+    //             }
+                
+    //             return message.channel.send(onCooldownMsg);
+    //         }
+    //         UserRepo.updateCooldown(message.author.id, commandName)
+    //     }
+
     if(!cooldowns.has(command.name)){
         cooldowns.set(command.name, new Discord.Collection());
     }
 
-    const current_time = Date.now();
     const time_stamps = cooldowns.get(command.name);
     const cooldown_amount = (command.cooldown) * 1000;
 
     if(time_stamps.has(message.author.id)){
         const expiration_time = time_stamps.get(message.author.id) + cooldown_amount;
 
-        if(current_time < expiration_time){
-            const time_left = (expiration_time - current_time) / 1000;
-            return message.reply(`Please wait ${time_left.toFixed(1)} more seconds before using ${command.name}`); 
+        if(Date.now() < expiration_time){
+            const time = prettyMilliseconds(command.cooldown - (Date.now() - expiration_time), { verbose: true } );
+
+            let onCooldownMsg = `<@${message.author.id}> ${command.name} is on cooldown for another`;
+
+            onCooldownMsg += ` **${time}**`;
+
+            return message.channel.send(onCooldownMsg); 
         }
     }
 
-    time_stamps.set(message.author.id, current_time);
+    time_stamps.set(message.author.id, Date.now());
 
     setTimeout(() => time_stamps.delete(message.author.id), cooldown_amount);
 

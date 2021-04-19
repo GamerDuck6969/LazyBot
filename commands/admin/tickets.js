@@ -22,9 +22,9 @@ module.exports = {
             let reply = ``
 
             for(const ticket of results.TicketArray){
-                const { NewTicket, Reason, Timestamp } = ticket
+                const { NewTicket, userID, guildID, Server, Reason, Timestamp } = ticket
                 console.log(ticket)
-                reply += `**Ticket**: ${NewTicket}\n**User**: ${target.tag}\n**Server**: ${message.guild.name}\n**Reason**: ${Reason}\n**Date**: ${new Date(Timestamp).toLocaleDateString()}\n\n-----------------------------------------------\n\n`;
+                reply += `**Ticket**: ${NewTicket}\n**User**: <@${userID}>\n**ServerID**: ${guildID}\n**Server**: ${Server}\n**Reason**: ${Reason}\n**Date**: ${new Date(Timestamp).toLocaleDateString()}\n\n-----------------------------------------------\n\n`;
             }
             const embed = new Discord.MessageEmbed()
             .setDescription(`${reply}` )

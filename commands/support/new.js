@@ -37,6 +37,9 @@ module.exports =
         if(data){
             data.TicketArray.unshift({
                 NewTicket: 'New Ticket',
+                guildID: message.guild.id,
+                userID: message.author.id,
+                Server: message.guild.name,
                 Timestamp: new Date().getTime(),
                 Reason: reason,
             });
@@ -50,6 +53,9 @@ module.exports =
                 UserID: message.author.id,
                 TicketArray: [{
                     NewTicket: 'New Ticket',
+                    guildID: message.guild.id,
+                    userID: message.author.id,
+                    Server: message.guild.name,
                     Timestamp: new Date().getTime(),
                     Reason: reason,
                 },],

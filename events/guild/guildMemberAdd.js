@@ -25,7 +25,8 @@ module.exports = async(client, Discord, member) => {
             hourly: 100,
             workers: 0,
             miners: 0,
-            bots: 0
+            bots: 0,
+            cooldowns: 0,
         });
         profile.save();
     }
